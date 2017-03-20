@@ -1,0 +1,86 @@
+<!--  输入「1,1,6,6,4,5,5」
+输出「1,4,5,6」-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <script type="text/javascript">
+            var quickSort = function (arr) {
+                if (arr.length <= 1) {
+                    return arr
+                }
+                var pivotIndex = Math.floor(arr.length / 2)
+                var pivot = arr.splice(pivotIndex, 1)[0]
+                var left = []
+                var right = []
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] < pivot) {
+                        left.push(arr[i])
+                    } else {
+                        right.push(arr[i])
+                    }
+                }
+                return quickSort(left).concat([pivot], quickSort(right));
+            }
+
+            var quchong = function (arr) {
+                // var newArr = new Set() for (var i = 0; i < arr.length; i++) {     newArr.add(arr[i]) } var result = [] for (var x of newArr) {     result.push(parseInt(x))
+                //
+                // } return result
+                var newArr = Array.from(new Set(arr))
+                for (var i = 0; i < newArr.length; i++) {
+                    newArr[i] = parseInt(newArr[i])
+                }
+                return newArr
+            }
+
+            var e = function (selector) {
+                return document.querySelector(selector)
+            }
+
+            var bindEvent = function (element, eventName, callback) {
+                element.addEventListener(eventName, callback)
+            }
+
+            var appendHtml = function (element, html) {
+                element.insertAdjacentHTML('beforeend', html)
+            }
+        </script>
+    </head>
+    <body>
+        <div class="todo-form">
+            <input id='id-input-todo' type="text">
+            <button id='id-button-add' type="button">去重</button>
+        </div>
+        <div id="id-div-container">
+            <p class='todo-cell'></p>
+        </div>
+        <script type="text/javascript">
+            var input = e('#id-input-todo')
+            var button = e('#id-button-add')
+
+            bindEvent(button, 'click', function () {
+                var input = e('#id-input-todo')
+                console.log('input', input.value)
+                var arr = input.value.split(',')
+                console.log('arr = ', arr)
+
+                var mArr = quchong(arr)
+                console.log('mArr =', mArr);
+                var newArr = quickSort(mArr)
+                console.log('newArr = ', newArr);
+                var newString = newArr.join(',')
+                console.log('newString', newString)
+
+                var t = `
+                        <p>${newString}</p>
+                `
+                var text = e('#id-div-container')
+                appendHtml(text, t)
+
+            })
+        </script>
+    </body>
+</html>
