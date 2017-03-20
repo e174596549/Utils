@@ -1,0 +1,24 @@
+duotai
+
+export http_proxy=http://duotai:7Ek_vcfDRlu@sheraton.h.xduotai.com:21251
+export https_proxy=$http_proxy
+
+unset http_proxy
+unset https_proxy
+
+electron
+
+npm install electron
+npm install --save-dev electron-prebuilt
+npm install --save-dev electron-packager
+npm run-script package
+
+ssh ubuntu@118.89.231.241
+sudo forever stopall
+
+gitbook serve
+
+npm install -g npm-check-updates
+npm update <name>
+
+vue init webpack <my-project>
