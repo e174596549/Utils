@@ -15,6 +15,10 @@ var log = function() {
     console.log.apply(console, arguments)
 }
 
+function myTypeOf(a){
+return Object.prototype.toString.call(a)
+}
+
 var data = function() {
     var myDate = new Date();
     this.Year = myDate.getYear(); //获取当前年份(2位)
