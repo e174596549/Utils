@@ -16,7 +16,13 @@ var log = function() {
 }
 
 function myTypeOf(a){
-return Object.prototype.toString.call(a)
+    return Object.prototype.toString.call(a)
+}
+
+// 随机生成m-n之间的一个数字
+function creatRandomNum(m, n) {
+    let r = Math.floor(Math.random() * n + m)
+    return r
 }
 
 var data = function() {
