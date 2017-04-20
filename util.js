@@ -17,19 +17,19 @@ var log = function() {
 
 var data = function() {
     var myDate = new Date();
-    this.Year = myDate.getYear(); //获取当前年份(2位)
-    this.FullYear = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
-    this.Month = myDate.getMonth(); //获取当前月份(0-11,0代表1月)
-    this.Date = myDate.getDate(); //获取当前日(1-31)
-    this.Day = myDate.getDay(); //获取当前星期X(0-6,0代表星期天)
-    this.Time = myDate.getTime(); //获取当前时间(从1970.1.1开始的毫秒数)
-    this.Hours = myDate.getHours(); //获取当前小时数(0-23)
-    this.Minutes = myDate.getMinutes(); //获取当前分钟数(0-59)
-    this.Seconds = myDate.getSeconds(); //获取当前秒数(0-59)
-    this.Milliseconds = myDate.getMilliseconds(); //获取当前毫秒数(0-999)
-    this.LocaleDateString = myDate.toLocaleDateString(); //获取当前日期
-    var mytime = myDate.toLocaleTimeString(); //获取当前时间
-    this.LocaleString = myDate.toLocaleString(); //获取日期与时间
+    this.Year = myDate.getYear(); // 获取当前年份(2位)
+    this.FullYear = myDate.getFullYear(); // 获取完整的年份(4位,1970-????)
+    this.Month = myDate.getMonth(); // 获取当前月份(0-11,0代表1月)
+    this.Date = myDate.getDate(); // 获取当前日(1-31)
+    this.Day = myDate.getDay(); // 获取当前星期X(0-6,0代表星期天)
+    this.Time = myDate.getTime(); // 获取当前时间(从1970.1.1开始的毫秒数)
+    this.Hours = myDate.getHours(); // 获取当前小时数(0-23)
+    this.Minutes = myDate.getMinutes(); // 获取当前分钟数(0-59)
+    this.Seconds = myDate.getSeconds(); // 获取当前秒数(0-59)
+    this.Milliseconds = myDate.getMilliseconds(); // 获取当前毫秒数(0-999)
+    this.LocaleDateString = myDate.toLocaleDateString(); // 获取当前日期
+    var mytime = myDate.toLocaleTimeString(); // 获取当前时间
+    this.LocaleString = myDate.toLocaleString(); // 获取日期与时间
 }
 
 var e = function(selector) {
@@ -125,7 +125,7 @@ function getViewport() {
     }　　
 }
 
-//快速排序
+// 快速排序
 var quickSort = function(arr) {　　
     if (arr.length <= 1) {
         return arr
@@ -173,4 +173,10 @@ var save = function(array) {
 var load = function() {
     var s = localStorage.todos
     return JSON.parse(s)
+}
+
+// sleep
+function sleep(milliSeconds) {
+    var startTime = new Date().getTime();
+    while (new Date().getTime() < startTime + milliSeconds);
 }

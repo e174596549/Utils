@@ -1,17 +1,15 @@
 duotai
-
 export http_proxy=http://duotai:7Ek_vcfDRlu@sheraton.h.xduotai.com:21251
 export https_proxy=$http_proxy
-
 unset http_proxy
 unset https_proxy
 
 electron
-
 npm install electron
 npm install --save-dev electron-prebuilt
 npm install --save-dev electron-packager
 npm run-script package
+
 
 ssh ubuntu@118.89.231.241
 sudo forever stopall
@@ -21,4 +19,55 @@ gitbook serve
 npm install -g npm-check-updates
 npm update <name>
 
+Vue-cli
 vue init webpack <my-project>
+npm run dev
+
+mongodb
+mongodb://10.200.43.165/vox-ryr
+db.admins.find()
+db.getCollection('answers').find({})
+var xx = db.getCollection('games').findOne({"methodStat.3" : 4},{type:0})
+print(xx)
+正式环境：
+    "mongoConfig" : {
+        "option" : {
+            "user":"ryr-user",
+            "pass":"2017ryr_yqzy#!",
+            "auth":{"authdb":"admin"}
+        },
+        "url" : "mongodb://192.168.20.58:47701,192.168.20.57:47701/vox-ryr?replicaSet=47701"
+    }
+测试环境：
+  "mongoConfig" : {
+        "option" : {"user":"ryr-user","pass":"ryr.user.pwd.test","auth":{"authdb":"admin"}},
+        "url" : "mongodb://192.168.100.107:57000/vox-ryr"
+    }
+
+
+db.points.find({pay:{$ne:0}}).forEach(function(item) {
+    var user = db.users.findOne({_id:ObjectId(item.uid)},{'profile.userId':1});
+   print ([user.profile.userId+'',item.own,item.pay,item.ret,item.createTime.toLocaleString()].join(','));
+});
+
+跳板机
+ssh yuan.liu@192.168.100.55
+
+curl -T 文件名 ftp://192.168.100.55/ --user 用户名:密码 
+mongo 192.168.20.58:47701/vox-ryr -u ryr-user -p 2017ryr_yqzy#! --authenticationDatabase admin  xxx.js > out.csv
+
+
+
+var snapData = querystring.stringify({ gametype: snap.gametype, gradegroup: snap.gradegroup, gamelevel: snap.gamelevel, gid: snap.gid })
+
+var snapData = snap.gametype + '$' + snap.gradegroup + '$' + snap.gamelevel + '$' + snap.gid;
+
+<td><button class="js-point-table-detail"  data-snap=<%=snapData%>  >查看</button></td>
+
+telnet 10.200.43.165 6379
+
+redis-server 
+redis-cli
+publish chatchannel 
+
+get set list pub sub io
