@@ -132,3 +132,6 @@ module.exports = pptDelSchema;
                 }
                 next(false);
             });
+PptModel.find(query).select({
+                ppt_id : 1, ppt_name : 1, _id : 0
+            }).limit(5).lean().exec(function(err,items) {
