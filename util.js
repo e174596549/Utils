@@ -190,3 +190,7 @@ function sleep(milliSeconds) {
     var startTime = new Date().getTime();
     while (new Date().getTime() < startTime + milliSeconds);
 }
+
+function shit6(m, n) {
+    return (f => f(f))(g => (m, n) => m === 1 ? [n] : g(g)(m - 1, n).concat(n))(m, n)
+}
