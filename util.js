@@ -194,3 +194,8 @@ function sleep(milliSeconds) {
 function shit6(m, n) {
     return (f => f(f))(g => (m, n) => m === 1 ? [n] : g(g)(m - 1, n).concat(n))(m, n)
 }
+// 显示布局
+[...document.querySelectorAll('*')].forEach( element => element.style.outline = `2px #${((Math.random()*0xFFFFFF)>>0).toString(16)} solid` )
+[].forEach.call($$("*"),function(a){a.style.outline="1px solid #"+(~~(Math.random()*(1<<24))).toString(16)}) // 
+// 自动查找问题
+window.onerror = e => window.location = `http://stackoverflow.com/search?q=${e.message}`;
