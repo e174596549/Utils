@@ -220,3 +220,17 @@ function _int2iP(num) {
     str = String(tt[0]) + "." + String(tt[1]) + "." + String(tt[2]) + "." + String(tt[3]);
     return str;
 }
+
+// 从 0 - count 随机生成 maxSize 个不重复的偶数
+const _random = function(count, maxSize) {
+    count >>= 1;
+    const mySet = new Set();
+    if (count < maxSize) {
+        maxSize = count;
+    }
+    while (mySet.size < maxSize) {
+        const num = Math.floor((Math.random() * 10) % count);
+        mySet.add(num << 1);
+    }
+    return Array.from(mySet);
+};
