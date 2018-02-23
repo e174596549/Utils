@@ -235,6 +235,7 @@ const _random = function(count, maxSize) {
     return Array.from(mySet);
 };
 
+// 设置私有属性
 class Shape {
   constructor(width, height) {
     this._width = width;
