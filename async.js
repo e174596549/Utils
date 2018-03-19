@@ -227,31 +227,43 @@ async.waterfall([
   
   
 //自动依赖  
-async.auto({  
-    func1: function (callback, results) {  
-        callback(null, "1", "2");  
-    },  
-  
-    func2: function (callback, results) {  
-        console.log("func2:\n" + util.inspect(results));  
-        callback(null, { "name": "zjw" });  
-    },  
-    func3: ["func2", function (callback, results) {  
-  
-        console.log("func3\n");  
-        console.log(results.func2);  
-        console.log(util.inspect(results));  
-        callback(null, 3);  
-    }],  
-    func4: ["func1", "func3", function (callback, results) {  
-  
-        console.log("func4:\n");  
-        console.log(results.func1);  
-        console.log(results.func3);  
-        console.log(util.inspect(results));  
-        callback(null);  
-    }]  
-});  
+async.auto({
+    // this function will just be passed a callback
+    readData: async.apply(fs.readFile, 'data.txt', 'utf-8'),
+    showData: ['readData', function(results, cb) {
+        // results.readData is the file's contents
+        // ...
+    }]
+}, callback);
+
+async.auto({
+    get_data: function(callback) {
+        console.log('in get_data');
+        // async code to get some data
+        callback(null, 'data', 'converted to array');
+    },
+    make_folder: function(callback) {
+        console.log('in make_folder');
+        // async code to create a directory to store a file in
+        // this is run at the same time as getting the data
+        callback(null, 'folder');
+    },
+    write_file: ['get_data', 'make_folder', function(results, callback) {
+        console.log('in write_file', JSON.stringify(results));
+        // once there is some data and the directory exists,
+        // write the data to a file in the directory
+        callback(null, 'filename');
+    }],
+    email_link: ['write_file', function(results, callback) {
+        console.log('in email_link', JSON.stringify(results));
+        // once the file is written let's email a link to it...
+        // results.write_file contains the filename returned by write_file.
+        callback(null, {'file':results.write_file, 'email':'user@example.com'});
+    }]
+}, function(err, results) {
+    console.log('err = ', err);
+    console.log('results = ', results);
+});
   
   
 //series函数 串行执行  
