@@ -266,3 +266,35 @@ console.log(square.area);             // 100
 console.log(square instanceof Shape); // true
 square._width = 200;  
 https://juejin.im/post/5a8e9b6d5188257a5f1ed826
+
+
+class NextTickQueue {
+    constructor() {
+        this.head = null
+        this.tail = null
+        this.length = 0
+    }
+
+    push(v) {
+        const entry = { data: v, next: null }
+        if (this.length > 0) this.tail.next = entry
+        else this.head = entry
+        this.tail = entry
+        ++this.length
+    }
+
+    shift() {
+        if (this.length === 0) return
+        const ret = this.head.data
+        if (this.length === 1) this.head = this.tail = null
+        else this.head = this.head.next
+        --this.length
+        return ret
+    }
+
+    clear() {
+        this.head = null
+        this.tail = null
+        this.length = 0
+    }
+}
