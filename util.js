@@ -298,3 +298,247 @@ class NextTickQueue {
         this.length = 0
     }
 }
+//-----------------------------------------------------------------------------
+// base64 decoder
+// see http://sourceforge.net/projects/libb64/
+//-----------------------------------------------------------------------------
+var libb64 = {};
+libb64.decodeB64 = function(str) {
+  var c, decoded, fragment, i, op, n, table_length, v, il;
+  var table = [
+    62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1,
+    -1, -1, -2, -1, -1, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+    -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+    36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+  ];
+  table_length = table.length;
+  decoded = new Array((((table_length + 2) / 3) | 0) * 4);
+  c = n = op = 0;
+
+  for (i = 0, il = str.length; i < il; ++i) {
+    v = (str.charCodeAt(i) & 0xff) - 43;
+    if (v < 0 || v >= table_length) {
+      continue;
+    }
+    fragment = table[v];
+    if (fragment < 0) {
+      continue;
+    }
+    switch (n) {
+      case 0:
+        c = (fragment & 0x03f) << 2;
+        ++n;
+        break;
+      case 1:
+        c |= (fragment & 0x030) >> 4;
+        decoded[op++] = c;
+        c = (fragment & 0x00f) << 4;
+        ++n;
+        break;
+      case 2:
+        c |= (fragment & 0x03c) >> 2;
+        decoded[op++] = c;
+        c = (fragment & 0x003) << 6;
+        ++n;
+        break;
+      case 3:
+        c |= fragment & 0x03f;
+        decoded[op++] = c;
+        n = 0;
+    }
+  }
+  decoded.length = op;
+
+  return decoded;
+}
+libb64.encodeBase64 = function(arr)
+{
+    var map="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; //Base64从0到63的对应编码字符集
+    var buffer=0,result="";
+
+    for(var i=0;i<arr.length;i++)
+    {
+        buffer=(buffer<<8)+arr[i];
+        if(i%3==2) //每3个字节处理1次
+        {
+            result+=map.charAt(buffer>>18)+map.charAt(buffer>>12&0x3f)+map.charAt(buffer>>6&0x3f)+map.charAt(buffer&0x3f);
+            buffer=0;
+        }
+    } //3的整数倍的字节已处理完成，剩余的字节仍存放于buffer中
+    if(arr.length%3==1) //剩余1个字节
+        result+=map.charAt(buffer>>2)+map.charAt(buffer<<4&0x3f)+"==";
+    else if(arr.length%3==2) //剩余2个字节
+        result+=map.charAt(buffer>>10)+map.charAt(buffer>>4&0x3f)+map.charAt(buffer<<2&0x3f)+"=";
+    return result;
+}
+
+
+var utf8 = {}
+
+utf8.toByteArray = function(str) {
+    var byteArray = [];
+    for (var i = 0; i < str.length; i++)
+        if (str.charCodeAt(i) <= 0x7F)
+            byteArray.push(str.charCodeAt(i));
+        else {
+            var h = encodeURIComponent(str.charAt(i)).substr(1).split('%');
+            for (var j = 0; j < h.length; j++)
+                byteArray.push(parseInt(h[j], 16));
+        }
+    return byteArray;
+};
+
+utf8.unserializeByteArray = function(arr) {
+    var str = '';
+    for (var i = 0; i < arr.length; i++) {
+        var value = arr[i];
+        if (value <= 0x7F) {
+           str += String.fromCharCode(value);
+        }  else {
+            var hex = value.toString(16);
+            str += '%'+hex;
+        }
+    }
+    return decodeURIComponent(str);
+}
+
+utf8.parse = function(byteArray) {
+    var str = '';
+    for (var i = 0; i < byteArray.length; i++)
+        str +=  byteArray[i] <= 0x7F?
+            byteArray[i] === 0x25 ? "%25" : // %
+                String.fromCharCode(byteArray[i]) :
+            "%" + byteArray[i].toString(16).toUpperCase();
+    return decodeURIComponent(str);
+};
+/**
+ * Created by star on 2014/7/25.
+ */
+// 对Date的扩展，将 Date 转化为指定格式的String
+// 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+// 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
+// 例子：
+// (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
+// (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
+Date.prototype.Format = function(fmt) { //author: meizz
+    var o = {
+        "M+" : this.getMonth()+1,                 //月份
+        "d+" : this.getDate(),                    //日
+        "h+" : this.getHours(),                   //小时
+        "m+" : this.getMinutes(),                 //分
+        "s+" : this.getSeconds(),                 //秒
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt))
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    for(var k in o)
+        if(new RegExp("("+ k +")").test(fmt))
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+    return fmt;
+};
+
+/*
+ *  方法:Array.remove(dx)
+ *  功能:根据元素值删除数组元素.
+ *  参数:元素值
+ *  返回:在原数组上修改数组
+ *	作者：pxp
+ */
+Array.prototype.indexOf = function (val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == val) {
+            return i;
+        }
+    }
+    return -1;
+};
+Array.prototype.removevalue = function (val) {
+    var index = this.indexOf(val);
+    if (index > -1) {
+        this.splice(index, 1);
+    }
+};
+
+
+/*
+ *  方法:Array.remove(dx)
+ *  功能:根据元素位置值删除数组元素.
+ *  参数:元素值
+ *  返回:在原数组上修改数组
+ *	作者：pxp
+ */
+Array.prototype.remove = function (dx) {
+    if (isNaN(dx) || dx > this.length) {
+        return false;
+    }
+    for (var i = 0, n = 0; i < this.length; i++) {
+        if (this[i] != this[dx]) {
+            this[n++] = this[i];
+        }
+    }
+    this.length -= 1;
+};
+
+/**
+ * 用于实现页面 Map 对象，Key只能是String，对象随意
+ * @constructor
+ */
+function Map(){
+    this._entrys = new Array();
+
+    this.put = function(key, value){
+        if (key == null || key == undefined) {
+            return;
+        }
+        var index = this._getIndex(key);
+        if (index == -1) {
+            var entry = new Object();
+            entry.key = key;
+            entry.value = value;
+            this._entrys[this._entrys.length] = entry;
+        }else{
+            this._entrys[index].value = value;
+        }
+    };
+    this.get = function(key){
+        var index = this._getIndex(key);
+        return (index != -1) ? this._entrys[index].value : null;
+    };
+    this.remove = function(key){
+        var index = this._getIndex(key);
+        if (index != -1) {
+            this._entrys.splice(index, 1);
+        }
+    };
+    this.clear = function(){
+        this._entrys = [];
+    };
+    this.contains = function(key){
+        var index = this._getIndex(key);
+        return (index != -1) ? true : false;
+    };
+    this.getCount = function(){
+        return this._entrys.length;
+    };
+    this.getEntrys =  function(){
+        return this._entrys;
+    };
+    this._getIndex = function(key){
+        if (key == null || key == undefined) {
+            return -1;
+        }
+        var _length = this._entrys.length;
+        for (var i = 0; i < _length; i++) {
+            var entry = this._entrys[i];
+            if (entry == null || entry == undefined) {
+                continue;
+            }
+            if (entry.key === key) {//equal
+                return i;
+            }
+        }
+        return -1;
+    };
+}
